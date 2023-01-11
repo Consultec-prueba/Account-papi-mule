@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <configuration-properties file="mule-artifact.properties"/>
+    <http:request-config basePath="/api/v1" doc:id="92b30fc4-f038-49a4-ab1f-0a558006485d" doc:name="Customer-papi-url" doc:timestamp="1673412659149" name="customer-papi-url" requestStreamingMode="NEVER" sendBodyMode="NEVER">
+        <http:request-connection host="${customer-papi-url.Connection.host.value}"/>
+        <expiration-policy maxIdleTime="50"/>
+    </http:request-config>
+    <http:listener-config doc:id="51952d08-7bc0-4b90-a8e8-0899bab3894d" doc:name="CloudHub HTTP" doc:timestamp="1673385344991" name="cloudhub_http">
+        <http:listener-connection host="${cloudhub_http.Connection.host.value}" port="${cloudhub_http.Connection.port.value}"/>
+    </http:listener-config>
+    <http:request-config basePath="/api/v1" doc:id="e57ae09a-8d96-429e-9fb4-c65babfd12ac" doc:name="Account-papi-url" doc:timestamp="1673412654914" name="account-papi-url">
+        <http:request-connection host="${account-papi-url.Connection.host.value}"/>
+    </http:request-config>
+    <flow doc:id="71884965-50d3-4314-ae91-4c7071239b51" doc:name="Account Validate - Create" doc:timestamp="1673385177841" name="account_validate_-_create">
+        <http:listener allowedMethods="POST" config-ref="cloudhub_http" doc:id="a9b303c9-10bd-42a0-a28d-699a7a96fda9" doc:name="Listener" doc:timestamp="1673410471749" path="/api/v1/account-papi"/>
+        <set-variable doc:id="e449a584-b3b1-4d8d-936c-dcdd2701af6a" doc:name="Set Variable" doc:timestamp="1673392272323" value="#[(payload)]" variableName="RequestIni"/>
+        <try doc:id="b4cbe51a-3499-4906-ba62-09c537b56ff0" doc:name="Try" doc:timestamp="1673388103037">
+            <http:request config-ref="customer-papi-url" doc:id="70e34a45-45cf-4154-a3fe-1d1ac22cc59b" doc:name="Request" doc:timestamp="1673410103666" path="/customer-sapi/{ID}" requestStreamingMode="NEVER" sendBodyMode="NEVER">
+                <http:body>#[%dw 2.0&#13;
+---&#13;
+null]</http:body>
+                <http:uri-params>#[%dw 2.0
+output application/java  
+---
+{
+  ID: payload.customer.id as Number
+}]</http:uri-params>
+            </http:request>
+            <error-handler doc:id="252bea4c-f68a-44ea-afe5-2a33e146a00d" doc:name="" doc:timestamp="1673388103518">
+                <on-error-continue doc:id="75a41a6c-5d3c-44ca-abf7-a5f8af3bfa78" doc:name="" doc:timestamp="1673396779887" enableNotifications="false" type="MULE:ANY" when="#[true]">
+                    <ee:transform doc:id="0c484aff-12a5-4b18-bac6-22771a78be37" doc:name="Transform" doc:timestamp="1673397547543">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[%dw 2.0
+output application/json  
+---
+{
+  "StatusInfo":
+    {
+      "StatusCode": 500,
+      "StatusDesc": "No existe Usuario"
+   }
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <choice doc:id="778490cc-cdc7-4c12-a188-0fab5745d9b0" doc:name="Choice" doc:timestamp="1673386301353">
+            <when doc:id="04f9778d-c195-46f3-9a94-37b27a3d523a" doc:name="Activo" doc:timestamp="1673390239455" expression="#[attributes[&quot;statusCode&quot;]==200]">
+                <http:request config-ref="account-papi-url" doc:id="22ae1fd7-e728-4457-9426-b6c4229295f9" doc:name="Request" doc:timestamp="1673410111574" method="POST" path="/account-sapi">
+                    <http:body>#[%dw 2.0
+output application/json  
+---
+{
+  debitAccount: {
+    accountNumber: vars.RequestIni.debitAccount.accountNumber
+  },
+  savingsAmount: vars.RequestIni.savingsAmount,
+  customer: {
+    id: vars.RequestIni.customer.id
+  }
+}]</http:body>
+                </http:request>
+            </when>
+        </choice>
+    </flow>
+</mule>

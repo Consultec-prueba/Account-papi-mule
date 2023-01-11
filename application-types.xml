@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="account" format="json">
+      <types:example format="json"><![CDATA[{
+  "firstName": "Carley",
+  "lastName": "Schmitt",
+  "createdAt": "2022-12-20T17:07:14.207Z",
+  "avatar": "https://cloudflare-ipfs.com/ipfs/avatar/646.jpg",
+  "status": [
+    {
+      "id": 1
+    },
+    {
+      "name": "Active"
+    }
+  ],
+  "id": 3
+}]]></types:example>
+    </types:type>
+    <types:type name="Client" format="json">
+      <types:example format="json"><![CDATA[{
+  "debitAccount": {
+    "accountNumber": "14472687"
+  },
+  "savingsAmount": 38.13,
+  "customer": {
+    "id": "2"
+  }
+}]]></types:example>
+    </types:type>
+    <types:type name="Custom Type" format="json">
+      <types:example format="json"><![CDATA[{
+    "StatusInfo":{
+  "StatusCode": 1,
+  "StatusDesc": ""
+}}]]></types:example>
+    </types:type>
+    <types:type name="Travel account" format="json">
+      <types:example format="json"><![CDATA[{
+  "accountNumber": "88944436",
+  "debitAccount": [
+    {
+      "accountNumber": "14472687"
+    }
+  ],
+  "savingsAmount": 87.13,
+  "customer": [
+    {
+      "id": 2
+    }
+  ],
+  "id": 3,
+    "StatusInfo":{
+  "StatusCode": 1,
+  "StatusDesc": ""
+}
+}]]></types:example>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#cd9639b7-abbd-4198-8859-c2a8938db196">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="account"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#bf897482-97fd-4a21-8bbd-0101855a8c78">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="account"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#abcdbef8-cc26-4ac2-9237-538714381e57">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Client"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="account"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#93b556f6-4c6a-4eed-8f8d-ed35d163c609">
+    <types:processor-declaration/>
+  </types:enrichment>
+  <types:enrichment select="#1858bfb2-ac62-4c40-9771-a77d03db3474">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Client"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f4a69cd1-8ca7-41a8-8230-e5e7b9fba67a">
+    <types:processor-declaration/>
+  </types:enrichment>
+  <types:enrichment select="#a9b303c9-10bd-42a0-a28d-699a7a96fda9">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Client"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#70e34a45-45cf-4154-a3fe-1d1ac22cc59b">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="account"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#22ae1fd7-e728-4457-9426-b6c4229295f9">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="account"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Travel account"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3cdc9704-3315-4ef8-8a63-c961794da063">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Custom Type"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f6cea971-b9fd-4769-8784-bf6e9288c95d">
+    <types:processor-declaration/>
+  </types:enrichment>
+  <types:enrichment select="#0c484aff-12a5-4b18-bac6-22771a78be37">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Custom Type"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#84f0905f-0f9c-4878-9be4-d2fc26b1fc1a">
+    <types:processor-declaration/>
+  </types:enrichment>
+  <types:enrichment select="#77cb8631-ba73-4c97-abdd-5aeeee1de10b">
+    <types:processor-declaration/>
+  </types:enrichment>
+</types:mule>
